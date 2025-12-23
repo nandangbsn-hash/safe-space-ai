@@ -1,20 +1,40 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { MoodEntry, MOODS } from '@/lib/types';
-import { Sparkles, Wind, Target, Heart, Play, Pause, RotateCcw, ChevronRight } from 'lucide-react';
+import { Sparkles, Wind, Target, Heart, Play, Pause, RotateCcw, ChevronRight, Stethoscope } from 'lucide-react';
+
+interface TherapistExercise {
+  id: string;
+  title: string;
+  description: string;
+  instructions: string;
+  category: string;
+  icon: string;
+}
 
 export default function Wellness() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [activeExercise, setActiveExercise] = useState<string | null>(null);
   const [moodEntries, setMoodEntries] = useState<MoodEntry[]>([]);
+  const [therapistExercises, setTherapistExercises] = useState<TherapistExercise[]>([]);
+  const [activeTherapistExercise, setActiveTherapistExercise] = useState<string | null>(null);
 
   useEffect(() => {
+    loadTherapistExercises();
     if (user) loadMoodEntries();
   }, [user]);
+
+  const loadTherapistExercises = async () => {
+    const { data } = await supabase
+      .from('wellness_exercises')
+      .select('*')
+      .order('created_at', { ascending: false });
+    setTherapistExercises((data as TherapistExercise[]) || []);
+  };
 
   const loadMoodEntries = async () => {
     const { data } = await supabase
@@ -106,7 +126,7 @@ export default function Wellness() {
         )}
       </div>
 
-      {/* Exercises */}
+      {/* Built-in Exercises */}
       <h2 className="text-lg font-medium mb-4">Coping Toolkit</h2>
       <div className="space-y-4">
         {exercises.map((exercise, i) => (
@@ -143,6 +163,51 @@ export default function Wellness() {
           </div>
         ))}
       </div>
+
+      {/* Therapist Exercises */}
+      {therapistExercises.length > 0 && (
+        <>
+          <h2 className="text-lg font-medium mb-4 mt-8 flex items-center gap-2">
+            <Stethoscope className="w-5 h-5 text-safe-sage" />
+            From Our Therapists
+          </h2>
+          <div className="space-y-4">
+            {therapistExercises.map((exercise, i) => (
+              <div
+                key={exercise.id}
+                className="bg-card rounded-2xl p-4 border border-border shadow-soft animate-slide-up"
+                style={{ animationDelay: `${i * 100}ms` }}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-safe-sage-light flex items-center justify-center">
+                    <span className="text-2xl">{exercise.icon || '✨'}</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-medium">{exercise.title}</h3>
+                    <p className="text-sm text-muted-foreground">{exercise.description}</p>
+                  </div>
+                  <Button
+                    variant={activeTherapistExercise === exercise.id ? 'safe' : 'safe-outline'}
+                    size="sm"
+                    onClick={() => setActiveTherapistExercise(activeTherapistExercise === exercise.id ? null : exercise.id)}
+                  >
+                    {activeTherapistExercise === exercise.id ? 'Close' : 'View'}
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {activeTherapistExercise === exercise.id && (
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <div className="prose prose-sm max-w-none">
+                      <p className="text-muted-foreground whitespace-pre-wrap">{exercise.instructions}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
