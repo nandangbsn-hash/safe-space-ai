@@ -1,7 +1,8 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, PenLine, Users, Sparkles, BookOpen, BookHeart, MessageCircle, User, LogOut, Shield } from 'lucide-react';
+import { Home, PenLine, Users, Sparkles, BookOpen, BookHeart, MessageCircle, User, LogOut, Shield, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -22,6 +23,26 @@ const navItems = [
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const [isProfessional, setIsProfessional] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      checkProfessionalStatus();
+    } else {
+      setIsProfessional(false);
+    }
+  }, [user]);
+
+  const checkProfessionalStatus = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('professionals')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('status', 'verified')
+      .single();
+    setIsProfessional(!!data);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -55,6 +76,14 @@ export default function Layout({ children }: LayoutProps) {
 
             {/* User Actions */}
             <div className="flex items-center gap-2">
+              {isProfessional && (
+                <Link to="/therapist-dashboard">
+                  <Button variant="lavender" size="sm" className="hidden sm:flex gap-2">
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Button>
+                </Link>
+              )}
               <Link to="/professionals">
                 <Button variant="safe-outline" size="sm" className="hidden sm:flex gap-2">
                   <Shield className="w-4 h-4" />

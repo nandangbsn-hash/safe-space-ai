@@ -68,6 +68,33 @@ export type Database = {
         }
         Relationships: []
       }
+      direct_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          recipient_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          recipient_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          recipient_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
       journal_entries: {
         Row: {
           ai_response: string | null
@@ -309,6 +336,39 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      wellness_exercises: {
+        Row: {
+          author_id: string
+          category: string
+          created_at: string
+          description: string
+          icon: string | null
+          id: string
+          instructions: string
+          title: string
+        }
+        Insert: {
+          author_id: string
+          category?: string
+          created_at?: string
+          description: string
+          icon?: string | null
+          id?: string
+          instructions: string
+          title: string
+        }
+        Update: {
+          author_id?: string
+          category?: string
+          created_at?: string
+          description?: string
+          icon?: string | null
+          id?: string
+          instructions?: string
+          title?: string
         }
         Relationships: []
       }

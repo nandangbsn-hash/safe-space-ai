@@ -14,6 +14,9 @@ import Learn from "./pages/Learn";
 import Stories from "./pages/Stories";
 import Chat from "./pages/Chat";
 import Professionals from "./pages/Professionals";
+import TherapistRegister from "./pages/TherapistRegister";
+import TherapistDashboard from "./pages/TherapistDashboard";
+import TherapistChat from "./pages/TherapistChat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +39,9 @@ const App = () => (
               <Route path="/stories" element={<Stories />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/professionals" element={<Professionals />} />
+              <Route path="/therapist-register" element={<TherapistRegister />} />
+              <Route path="/therapist-dashboard" element={<TherapistDashboard />} />
+              <Route path="/therapist-chat/:therapistId" element={<TherapistChat />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>
