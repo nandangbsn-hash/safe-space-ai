@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Heart } from 'lucide-react';
+import { Loader2, Heart, Stethoscope } from 'lucide-react';
+
+type AuthMode = 'user' | 'therapist';
 
 export default function Auth() {
+  const [mode, setMode] = useState<AuthMode>('user');
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,7 +39,12 @@ export default function Auth() {
           title: isLogin ? "Welcome back!" : "Account created!",
           description: "You're now signed in to Safe Space.",
         });
-        navigate('/');
+        
+        if (mode === 'therapist') {
+          navigate(isLogin ? '/therapist-dashboard' : '/therapist-register');
+        } else {
+          navigate('/');
+        }
       }
     } catch (err) {
       toast({
@@ -53,17 +61,51 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center px-4 gradient-calm">
       <div className="w-full max-w-md">
         <div className="text-center mb-8 animate-fade-in">
-          <div className="w-16 h-16 rounded-full bg-primary mx-auto mb-4 flex items-center justify-center shadow-glow">
-            <span className="text-3xl">🌿</span>
+          <div className={`w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center shadow-glow ${
+            mode === 'therapist' ? 'bg-safe-sage' : 'bg-primary'
+          }`}>
+            <span className="text-3xl">{mode === 'therapist' ? '🩺' : '🌿'}</span>
           </div>
           <h1 className="text-2xl font-semibold text-foreground mb-2">
-            {isLogin ? 'Welcome back' : 'Join Safe Space'}
+            {mode === 'therapist' 
+              ? (isLogin ? 'Therapist Login' : 'Join as Therapist')
+              : (isLogin ? 'Welcome back' : 'Join Safe Space')}
           </h1>
           <p className="text-muted-foreground">
-            {isLogin 
-              ? 'A safe place to feel, reflect, and connect.' 
-              : 'Create your anonymous, safe space.'}
+            {mode === 'therapist'
+              ? 'Access your dashboard to help others'
+              : (isLogin 
+                  ? 'A safe place to feel, reflect, and connect.' 
+                  : 'Create your anonymous, safe space.')}
           </p>
+        </div>
+
+        {/* Mode Toggle */}
+        <div className="flex gap-2 mb-6 p-1 bg-muted rounded-xl">
+          <button
+            type="button"
+            onClick={() => setMode('user')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg transition-all ${
+              mode === 'user' 
+                ? 'bg-card shadow-sm text-foreground' 
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Heart className="w-4 h-4" />
+            User
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('therapist')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg transition-all ${
+              mode === 'therapist' 
+                ? 'bg-card shadow-sm text-foreground' 
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Stethoscope className="w-4 h-4" />
+            Therapist
+          </button>
         </div>
 
         <div className="bg-card rounded-2xl p-6 shadow-medium animate-slide-up">
@@ -97,7 +139,7 @@ export default function Auth() {
 
             <Button
               type="submit"
-              variant="safe"
+              variant={mode === 'therapist' ? 'default' : 'safe'}
               size="lg"
               className="w-full"
               disabled={loading}
@@ -106,14 +148,14 @@ export default function Auth() {
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <Heart className="w-4 h-4" />
+                  {mode === 'therapist' ? <Stethoscope className="w-4 h-4" /> : <Heart className="w-4 h-4" />}
                   {isLogin ? 'Sign In' : 'Create Account'}
                 </>
               )}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-2">
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
@@ -123,11 +165,19 @@ export default function Auth() {
                 ? "Don't have an account? Sign up" 
                 : "Already have an account? Sign in"}
             </button>
+            
+            {mode === 'therapist' && !isLogin && (
+              <p className="text-xs text-muted-foreground">
+                After signing up, you'll complete your professional profile
+              </p>
+            )}
           </div>
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6 px-4">
-          Your privacy matters. All your reflections and activities are private and secure.
+          {mode === 'therapist' 
+            ? 'Your credentials help us verify your professional status.'
+            : 'Your privacy matters. All your reflections and activities are private and secure.'}
         </p>
       </div>
     </div>
