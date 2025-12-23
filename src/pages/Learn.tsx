@@ -1,7 +1,7 @@
 import { BookOpen } from 'lucide-react';
 
 const cards = [
-  { title: 'Understanding Emotions', emoji: '🎭', content: 'Emotions are natural responses to life. They're not "good" or "bad" - they're information about what matters to you.' },
+  { title: 'Understanding Emotions', emoji: '🎭', content: "Emotions are natural responses to life. They're not 'good' or 'bad' - they're information about what matters to you." },
   { title: 'Stress vs Anxiety', emoji: '⚡', content: 'Stress is a response to a specific situation. Anxiety is worry about what might happen. Both are manageable with the right tools.' },
   { title: 'Healthy Coping', emoji: '🌱', content: 'Healthy coping helps you process feelings. Unhealthy coping (like avoidance) offers short-term relief but long-term problems.' },
   { title: 'When to Seek Help', emoji: '🤝', content: 'If feelings interfere with daily life for weeks, or you have thoughts of self-harm, reach out to a trusted adult or professional.' },
