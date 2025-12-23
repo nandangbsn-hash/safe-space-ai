@@ -125,6 +125,33 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_articles: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          emoji: string | null
+          id: string
+          title: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          emoji?: string | null
+          id?: string
+          title: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          emoji?: string | null
+          id?: string
+          title?: string
+        }
+        Relationships: []
+      }
       mood_entries: {
         Row: {
           created_at: string
